@@ -1,1 +1,2 @@
+print("Araav is gay") 
 
