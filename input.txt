@@ -2,5 +2,6 @@ var x1
 var x2
 ld R1 x1
 ld R2 x2
-a:dfjhdf ld R3 x1
+a: ld R3 x1
+je a
 hlt
