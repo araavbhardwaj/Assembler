@@ -1,6 +1,6 @@
-var X
-mov R1 $10
-mov R2 $100
-mul R3 R2 R1
-st R3 X
+var x1
+var x2
+ld R1 x1
+ld R2 x2
+a:dfjhdf ld R3 x1
 hlt

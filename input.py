@@ -1,9 +1,14 @@
 import main
-encoding={"A":["opcode","unused"]}
 isa=main.ISA()
 f=open("input.txt","r")
 lines={}
-inp=f.readlines()
+inp=f.read().splitlines()
+variables={}
+labels={}
+var_count = 0
+for i in range(len(inp)):
+    if inp[i][0:3] != "var":
+        var_count += 1 
 for line in inp:
     type=""
     x=line.split(" ")
@@ -14,12 +19,17 @@ for line in inp:
             type="B"
     elif x[0] in isa.instructions:            
         type=isa.getInstructionType(x[0])
-    lines[line[:-1]]=type
-    print(type)
+    elif ":" in x[0]:
+        type="H"
+    
+    lines[line]=type
+print(lines)
 binary=[]
+PC=-1
 for z in lines.keys():
+    PC+=1
+    p=z.split(" ")
     if lines[z]=="A":
-        p=z.split(" ")
         opcode=isa.getInstructionCode(p[0])
         r1=isa.getRegCode(p[1])
         r2=isa.getRegCode(p[2])
@@ -27,7 +37,6 @@ for z in lines.keys():
         temp=opcode+"00"+r1+r2+r3
         binary.append(temp)
     elif lines[z]=="B":
-        p=z.split(" ")
         if p[0]=="mov":
             opcode="00010"
         else:
@@ -37,34 +46,39 @@ for z in lines.keys():
         if len(str(imm))>8:
             print("Inavlid Imm value")
             continue
-
-        imm=str(imm)+str((8-(len(str(imm))))*"0")
+        imm=str((8-(len(str(imm))))*"0")+str(imm)
         
         temp=opcode+r1+str(imm)
         binary.append(temp)
     elif lines[z]=="C":
-        p=z.split(" ")
         opcode=isa.getInstructionCode(p[0])
         reg1=isa.getRegCode(p[1])
         reg2=isa.getRegCode(p[2])
         temp=opcode+"00000"+reg1+reg2
         binary.append(temp)
     elif lines[z]=="D":
-        p=z.split(" ")
         opcode=isa.getInstructionCode(p[0])
         reg1=isa.getRegCode(p[1])
-        mem=p[2]
+        mem=variables[p[2]]
         temp=opcode+reg1+mem
         binary.append(temp)
     elif lines[z]=="E":
         opcode=isa.getInstructionCode(p[0])
-        mem=p[1]
+        label
+        mem
         temp=opcode+"000"+mem
         binary.append(temp)
     elif lines[z]=="F":
         opcode=isa.getInstructionCode(p[0])
         temp=opcode+"00000000000"
         binary.append(temp)
+    elif lines[z]=="G":
+        mem=str(bin(var_count))[2:]
+        mem=str((8-(len(str(mem))))*"0")+mem
+        variables[p[1]]=mem
+        var_count+=1
+
+print(lines)
 print(binary)
-    
+print(variables)
     

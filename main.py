@@ -20,7 +20,9 @@ class ISA:
             "jlt": ["01100", "E"],
             "jgt": ["01101", "E"],
             "je": ["01111", "E"],
-            "hlt": ["01010", "F"]
+            "hlt": ["01010", "F"],
+            "var":["","G"],
+            "label":["","H"]
         }
 
         self.registers = {
@@ -33,7 +35,6 @@ class ISA:
             "R6": ["110", None],
             "FLAGS": ["111", None],
         }
-
     def getRegCode(self, reg):
         return self.registers[reg][0]
 
