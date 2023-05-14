@@ -9,6 +9,7 @@ var_count = 0
 for i in range(len(inp)):
     if inp[i][0:3] != "var":
         var_count += 1 
+        
 PC=-1
 for line in inp:
     PC+=1
@@ -35,15 +36,13 @@ for line in inp:
             type="B"
     elif x[0] in isa.instructions:            
         type=isa.getInstructionType(x[0])
+    if type=="G":
+        PC-=1
         
   
     lines[line]=type
 binary=[]
-print(labels)
-print(lines)
-PC=-1
 for z in lines.keys():
-    PC+=1
     p=z.split(" ")
     if lines[z]=="A":
         opcode=isa.getInstructionCode(p[0])
@@ -95,4 +94,5 @@ for z in lines.keys():
 print(lines)
 print(binary)
 print(variables)
-    
+print(labels)
+
