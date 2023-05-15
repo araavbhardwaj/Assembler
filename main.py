@@ -3,7 +3,7 @@ class ISA:
         self.instructions = {
             "add": ["00000", "A"],
             "sub": ["00001", "A"],
-            "movim": ["00010", "B"],
+            "mov": ["00010", "B"],
             "movreg": ["00011", "C"],
             "ld": ["00100", "D"],
             "st": ["00101", "D"],
@@ -17,10 +17,10 @@ class ISA:
             "not": ["01101", "C"],
             "cmp": ["01110", "C"],
             "jmp": ["01111", "E"],
-            "jlt": ["01100", "E"],
-            "jgt": ["01101", "E"],
-            "je": ["01111", "E"],
-            "hlt": ["01010", "F"],
+            "jlt": ["11100", "E"],
+            "jgt": ["11101", "E"],
+            "je": ["11111", "E"],
+            "hlt": ["11010", "F"],
             "var":["","G"],
             "label":["","H"]
         }
@@ -57,4 +57,4 @@ class ISA:
     def isValidLabelName(self, labelName):
         return True
 
-    
+
