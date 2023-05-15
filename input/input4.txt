@@ -4,8 +4,6 @@ sub	R0 R1 R2
 mov	R0 $100
 mov	R1 R2
 mov R5 FLAGS
-ld R5 myvar
-st R5 myvar
 mul R6 R1 R1
 div	R1 R3
 rs R1 $2

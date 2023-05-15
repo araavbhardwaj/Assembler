@@ -1,29 +1,28 @@
 import main
 isa=main.ISA()
-f=open("input/input4.txt","r")
+f=open("harcases/input33.txt","r")
 lines={}
 inp=f.read().splitlines()
 variables={}
 labels={}
 
 def tabspaces(string):
-    if "\t" in string or "\n" in string:
-        string=string.replace("\t","")
+    if "\t" in string or "\n" in string or "  " in string:
+        string=string.replace("\t"," ")
+        string=string.replace("  "," ")
         string=string.replace("\n","")
         string=string.strip()
     return string
-
-
-
-
 var_count = 0
 for i in range(len(inp)):
     if inp[i][0:3] != "var":
         var_count += 1 
         
 PC=-1
+i=0
 for line in inp:
     line=tabspaces(line)
+    inp[i]=line
     PC+=1
     type=""
     x=line.split(" ")
@@ -51,9 +50,9 @@ for line in inp:
     if type=="G":
         PC-=1
     lines[line]=type
+    i=i+1
 binary=[]
-print(lines)
-for z in lines.keys():
+for z in inp:
     p=z.split(" ")
     if lines[z]=="A":
         opcode=isa.getInstructionCode(p[0])
@@ -68,16 +67,23 @@ for z in lines.keys():
         else:
             opcode=isa.getInstructionCode(p[0])
         r1=isa.getRegCode(p[1])
-        imm=bin(int(p[2][1:]))[2:]
-        if len(str(imm))>8:
-            print("Inavlid Imm value")
-            continue
-        imm=str((8-(len(str(imm))))*"0")+str(imm)
+        print(p)
+        if p[2]=="FLAGS":
+            val=isa.getRegCode(p[2])
+        else:
+            val=bin(int(p[2][1:]))[2:]
+            if len(str(val))>8:
+                print("Inavlid Imm value")
+                continue
+            val=str((8-(len(str(val))))*"0")+str(val)
         
-        temp=opcode+r1+str(imm)
+        temp=opcode+r1+str(val)
         binary.append(temp)
     elif lines[z]=="C":
-        opcode=isa.getInstructionCode(p[0])
+        if p[0]=="mov":
+            opcode="00010"
+        else:
+            opcode=isa.getInstructionCode(p[0])
         reg1=isa.getRegCode(p[1])
         reg2=isa.getRegCode(p[2])
         temp=opcode+"00000"+reg1+reg2
