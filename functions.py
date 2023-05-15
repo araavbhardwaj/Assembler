@@ -196,3 +196,24 @@ def div_reg(reg3, reg4):
     mov_imm("R0", quotient) 
     mov_imm("R1", remainder) 1
 
+
+
+def check_variable_declaration(code):
+    lines = code.split('\n')
+    index = 0
+
+    while index < len(lines):
+        line = lines[index].strip()
+
+        if not line or line.startswith('#'):
+            index += 1
+            continue
+
+        if line.startswith('var'):
+            break
+
+        return error_message
+
+        index += 1
+
+    return None
