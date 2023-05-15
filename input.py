@@ -1,10 +1,21 @@
 import main
 isa=main.ISA()
-f=open("input.txt","r")
+f=open("input/input4.txt","r")
 lines={}
 inp=f.read().splitlines()
 variables={}
 labels={}
+
+def tabspaces(string):
+    if "\t" in string or "\n" in string:
+        string=string.replace("\t","")
+        string=string.replace("\n","")
+        string=string.strip()
+    return string
+
+
+
+
 var_count = 0
 for i in range(len(inp)):
     if inp[i][0:3] != "var":
@@ -12,6 +23,7 @@ for i in range(len(inp)):
         
 PC=-1
 for line in inp:
+    line=tabspaces(line)
     PC+=1
     type=""
     x=line.split(" ")
@@ -38,10 +50,9 @@ for line in inp:
         type=isa.getInstructionType(x[0])
     if type=="G":
         PC-=1
-        
-  
     lines[line]=type
 binary=[]
+print(lines)
 for z in lines.keys():
     p=z.split(" ")
     if lines[z]=="A":

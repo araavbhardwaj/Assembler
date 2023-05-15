@@ -56,3 +56,5 @@ class ISA:
 
     def isValidLabelName(self, labelName):
         return True
+
+    
