@@ -1,7 +1,7 @@
 import main
 import functions
 isa=main.ISA()
-f=open("CO_Project_Test_Cases/error-case3.txt","r")
+f=open("input.txt","r")
 lines={}
 inp=f.read().splitlines()
 variables={}
