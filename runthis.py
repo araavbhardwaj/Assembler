@@ -1,7 +1,10 @@
 import main
 import functions
+import sys
 isa=main.ISA()
-f=open("input.txt","r")
+f=[]
+for kx in sys.stdin:
+    f.append(kx)
 lines={}
 inp=f.read().splitlines()
 variables={}
@@ -134,8 +137,8 @@ for z in inp:
     line_ct+=1
 # print(inp)
 print(binary)
-with open ("output.txt","w") as f:
-    f.writelines(binary)
+for kx in binary:
+    sys.stdout.write(binary[kx])
 # print(labels)
 
 
