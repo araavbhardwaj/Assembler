@@ -135,10 +135,8 @@ for z in inp:
         var_count+=1
     functions.InvalidCases(p, line_ct)
     line_ct+=1
-# print(inp)
 print(binary)
 for kx in binary:
     sys.stdout.write(binary[kx])
-# print(labels)
 
 
