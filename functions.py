@@ -61,7 +61,7 @@ def InvalidCases(line,PC):
 def SupportedInstruction(type,line,PC):
     list_reg = isa.registers.keys()
     list_ins = isa.instructions.keys()
-    if line[0] not in list_ins :
+    if line[0] not in list_ins  :
         print("Invalid instruction at line",PC)
         quit()
     if type=="A":
@@ -72,10 +72,6 @@ def SupportedInstruction(type,line,PC):
         except:
             print("General Syntax Error at line",PC)
             quit()
-        # if RegisterNone(line[2]) or RegisterNone(line[3]):
-        #     print("No value stored in register")
-        #     quit()
-         
 
     elif type == "B":
         if len(line)!=3:
@@ -107,9 +103,6 @@ def SupportedInstruction(type,line,PC):
         if line[1] not in list_reg or line[2] not in list_reg:
             print("Invalid register number at line",PC)
             quit()
-        # if line[0]!="mov":
-        #     if RegisterNone(line[2]) or RegisterNone(line[1]):
-        #         print("No value stored in",line[2])
     
     elif type == "D":
         if len(line)!=3:
@@ -123,13 +116,16 @@ def SupportedInstruction(type,line,PC):
             print("Syntax Error at line",PC)
             quit()
 
-def HaltError(lines): 
+def HaltError(lines):
+    if lines[-1].strip()=="hlt":
+        return
+    
     for ins_idx in range(len(lines)):
+        if ":" in lines[ins_idx] and "hlt" in lines[ins_idx]:
+            return
         if lines[ins_idx] == "hlt" and ins_idx != len(lines)-1:
             print("Invalid use of hlt operation at line",ins_idx+1)
             quit()
-    if lines[-1]=="hlt":
-        return
     else:
         print("No halts found at the end!!!")  
         quit()

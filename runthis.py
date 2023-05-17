@@ -2,11 +2,10 @@ import main
 import functions
 import sys
 isa=main.ISA()
-f=[]
+inp=[]
 for kx in sys.stdin:
-    f.append(kx)
+    inp.append(kx)
 lines={}
-inp=f.read().splitlines()
 variables={}
 labels={}
 line_ct=1
@@ -27,6 +26,7 @@ i=0
 functions.HaltError(inp)
 for line in inp:
     line=tabspaces(line)
+    line=tabspaces(line)
     PC+=1
     type=""
     x=line.split(" ")
@@ -34,19 +34,23 @@ for line in inp:
         mem=str(bin(PC))[2:]
         mem=str((7-(len(str(mem))))*"0")+mem
         labels[x[0][:-1]]=mem
+        x[1]=x[1].strip()
         if x[1]=="mov":
-            if "R" in x[2] and "R" in x[3]:
+            if "R" in x[2] and ("R" in x[3] or "FLAGS" in x[3]):
                 type="C"
             else:
                 type="B"
         elif x[1] in isa.instructions:            
-            type=isa.getInstructionType(x[1]) 
-        lines[line[len(x[0])+1:]]=type
-        inp[i]=line[len(x[0])+1:]
+            type=isa.getInstructionType(x[1])
+        line=line.strip()
+        line=line[len(x[0])+1:]
+        line=line.strip()
+        lines[line]=type
+        inp[i]=line
         i=i+1
         continue
     elif x[0]=="mov":
-        if "R" in x[1] and "R" in x[2]:
+        if "R" in x[1] and ("R" in x[2] or "FLAGS" in x[2]):
             type="C"
         else:
             type="B"
@@ -82,7 +86,6 @@ for z in inp:
         r1=isa.getRegCode(p[1])
         if p[2]=="FLAGS":
             val=isa.getRegCode(p[2])
-            print(val)
         else:
             val=bin(int(p[2][1:]))[2:]
             if len(str(val))>7:
@@ -96,11 +99,14 @@ for z in inp:
         functions.SupportedInstruction("C", p, line_ct)
         functions.FlagError(p)
         if p[0]=="mov":
-            opcode="00010"
+            opcode="00011"
         else:
             opcode=isa.getInstructionCode(p[0])
         reg1=isa.getRegCode(p[1])
-        reg2=isa.getRegCode(p[2])
+        if p[2]=="FLAGS":
+            reg2=isa.getRegCode(p[2])
+        else:        
+            reg2=isa.getRegCode(p[2])
         temp=opcode+"00000"+reg1+reg2+"\n"
         binary.append(temp)
     elif lines[z]=="D":
@@ -130,13 +136,14 @@ for z in inp:
     elif lines[z]=="G":
         functions.check_variable_declaration(variables,inp,line_ct)
         mem=str(bin(var_count))[2:]
-        mem=str((8-(len(str(mem))))*"0")+mem
+        mem=str((7-(len(str(mem))))*"0")+mem
         variables[p[1]]=mem
         var_count+=1
     functions.InvalidCases(p, line_ct)
     line_ct+=1
-print(binary)
+binary[-1]=binary[-1][:-1]
 for kx in binary:
-    sys.stdout.write(binary[kx])
+    sys.stdout.write(kx)
+
 
 
