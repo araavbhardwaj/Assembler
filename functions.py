@@ -33,7 +33,7 @@ def sub_reg(reg1, reg2, reg3):
 def mov_imm(reg1, imm):
     reg1_val = imm & 0x7F  #  0x7F to ensure a 7-bit value
     mov_imm(reg1, reg1_val)
-    
+
 def ld(reg1, mem_addr):
     reg1_val = mem[mem_addr]  
     mov_imm(reg1, reg1_val)
@@ -323,21 +323,20 @@ def SupportedInstruction(type,line,PC):
             quit()
 
 def HaltError(lines):
-    if lines[-1].strip()=="hlt":
-        return
-    
     for ins_idx in range(len(lines)):
         if ":" in lines[ins_idx] and "hlt" in lines[ins_idx]:
             return
-        if lines[ins_idx] == "hlt" and ins_idx != len(lines)-1:
+        if "hlt" in lines[ins_idx] and ins_idx != len(lines)-1:
             print("Invalid use of hlt operation at line",ins_idx+1)
             quit()
+    if lines[-1].strip()=="hlt":
+        return
     else:
         print("No halts found at the end!!!")  
         quit()
 
 def FlagError(line):
-    if line[0]!="mov" and line[-1]=="FLAG":
+    if line[0]!="mov" and line[-1]=="FLAGS":
         print("Invalid use of FLAGS")
         quit()
 
