@@ -30,6 +30,17 @@ def sub_reg(reg1, reg2, reg3):
     reg1_val = reg2_val - reg3_val
     mov_imm(reg1,reg1_val)
 
+def mov_imm(reg1, imm):
+    reg1_val = imm & 0x7F  #  0x7F to ensure a 7-bit value
+    mov_imm(reg1, reg1_val)
+    
+def ld(reg1, mem_addr):
+    reg1_val = mem[mem_addr]  
+    mov_imm(reg1, reg1_val)
+
+def st(reg1, mem_addr):
+    mem[mem_addr] = getRegValue(reg1)  #mem is a array (pls check)
+
 def mov_reg(reg1, reg2):
     reg2_val = getRegValue(reg2) 
     mov_imm(reg1, reg2_val)
@@ -52,6 +63,201 @@ def div_reg(reg3, reg4):
     
     mov_imm("R0", quotient) 
     mov_imm("R1", remainder) 
+
+def rs(reg1, imm):
+    reg1_val = getRegValue(reg1)
+    shift_amount = imm & 0x7F  #  0x7F to ensure a 7-bit value
+    reg1_val >>= shift_amount
+    mov_imm(reg1, reg1_val)
+
+def ls(reg1, imm):
+    reg1_val = getRegValue(reg1)
+    shift_amount = imm & 0x7F #  0x7F to ensure a 7-bit value
+    reg1_val <<= shift_amount
+    mov_imm(reg1, reg1_val)
+
+def xor_reg(reg1, reg2, reg3):
+    reg2_val = getRegValue(reg2)
+    reg3_val = getRegValue(reg3)
+    reg1_val = reg2_val ^ reg3_val
+    mov_imm(reg1, reg1_val)
+
+def or_reg(reg1, reg2, reg3):
+    reg2_val = getRegValue(reg2)
+    reg3_val = getRegValue(reg3)
+    reg1_val = reg2_val | reg3_val
+    mov_imm(reg1, reg1_val)
+
+def and_reg(reg1, reg2, reg3):
+    reg2_val = getRegValue(reg2)
+    reg3_val = getRegValue(reg3)
+    reg1_val = reg2_val & reg3_val
+    mov_imm(reg1, reg1_val)
+
+def not_reg(reg1, reg2):
+    reg2_val = getRegValue(reg2)
+    reg1_val = ~reg2_val
+    mov_imm(reg1, reg1_val)
+
+
+
+
+def cmp(reg1, reg2):  # CHECKKKKKK THIS ONE PLS
+    reg1_val = getRegValue(reg1)
+    reg2_val = getRegValue(reg2)
+
+    if reg1_val < reg2_val:
+        FLAGS['C'] = 1
+    elif reg1_val > reg2_val:
+        FLAGS['C'] = -1
+    else:
+        FLAGS['C'] = 0
+
+    FLAGS['Z'] = 1 if reg1_val == reg2_val else 0
+
+def jmp(mem_addr):
+    pc = mem_addr  
+
+
+def jlt(mem_addr):
+    if FLAGS['C'] == 1:  # Assuming FLAGS['C'] represents the less than flag
+        jmp(mem_addr)  
+
+
+def jgt(mem_addr):
+    if FLAGS['C'] == -1:  # Assuming FLAGS['C'] represents the greater than flag
+        jmp(mem_addr) 
+
+
+def je(mem_addr):
+    if FLAGS['Z'] == 1:  # Assuming FLAGS['Z'] represents the equal flag
+        jmp(mem_addr)  
+
+def hlt():
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def InvalidCases(line,PC):
+    list_reg = isa.registers.keys()
+    list_ins = isa.instructions.keys()
+    if line[0] not in list_ins :
+        print("Invalid instruction at line",PC)
+        quit()
+def SupportedInstruction(type,line,PC):
+    list_reg = isa.registers.keys()
+    list_ins = isa.instructions.keys()
+    if line[0] not in list_ins  :
+        print("Invalid instruction at line",PC)
+        quit()
+    if type=="A":
+        try:
+            if line[1] not in list_reg or line[2] not in list_reg or line[3] not in list_reg:
+                print("Invalid register number at line",PC)
+                quit()
+        except:
+            print("General Syntax Error at line",PC)
+            quit()
+
+    elif type == "B":
+        if len(line)!=3:
+            print("Syntax Error at line",PC)
+            quit()
+
+        elif line[2]=="FLAGS":
+            pass
+        else:
+            try: x = int(line[2][1:])
+            except : 
+                print("Invalid immediate value .Not a whole number between 0 to 127 at line",PC)
+                quit()
+            if line[1] not in list_reg :
+                print("Invalid register at line",PC)
+                quit()
+            elif line[2][0]!="$":
+                print("Invalid symbol at line",PC)
+                quit()
+            elif x not in range(0,127):
+                print("Invalid immediate value at line",PC)
+                quit()
+        
+
+    elif type == "C":
+        if len(line)!=3:
+            print("Syntax Error at line",PC)
+            quit()
+        if line[1] not in list_reg or line[2] not in list_reg:
+            print("Invalid register number at line",PC)
+            quit()
+    
+    elif type == "D":
+        if len(line)!=3:
+            print("Syntax Error at line",PC)
+            quit()
+        if line[1] not in list_reg :
+            print("Invalid register number at line",PC)
+            quit()
+    elif type == "E":
+        if len(line)!=2:
+            print("Syntax Error at line",PC)
+            quit()
+
+def HaltError(lines):
+    if lines[-1].strip()=="hlt":
+        return
+    
+    for ins_idx in range(len(lines)):
+        if ":" in lines[ins_idx] and "hlt" in lines[ins_idx]:
+            return
+        if lines[ins_idx] == "hlt" and ins_idx != len(lines)-1:
+            print("Invalid use of hlt operation at line",ins_idx+1)
+            quit()
+    else:
+        print("No halts found at the end!!!")  
+        quit()
+
+def FlagError(line):
+    if line[0]!="mov" and line[-1]=="FLAG":
+        print("Invalid use of FLAGS")
+        quit()
+
+def check_variable_declaration(variables,code_lines,line_ct):
+    var_declared = False
+    instructions_started = False
+    if (variables.keys()==[]):
+        pass
+    else:
+        for line in code_lines:
+            if line.startswith('var'):
+                if instructions_started:
+                    print("Error: Variable declared after instructions at line",line_ct)
+                    quit()
+                    return
+
+                var_declared = True
+            elif not line.startswith('var') and not line.startswith(';'):
+                instructions_started = True
+
+        if not var_declared:
+            print("Error: No variable declaration found.")
+            quit()
+def check_variables(variables,line,line_ct):
+    if line[2] in variables:
+        pass
+    else:
+        print("Variable not declared at line",line_ct)
+        quit()
+
 def InvalidCases(line,PC):
     list_reg = isa.registers.keys()
     list_ins = isa.instructions.keys()
