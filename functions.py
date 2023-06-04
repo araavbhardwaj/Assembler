@@ -131,22 +131,7 @@ def jgt(mem_addr):
 
 def je(mem_addr):
     if FLAGS['Z'] == 1:  # Assuming FLAGS['Z'] represents the equal flag
-        jmp(mem_addr)  
-
-def hlt():
-
-
-
-
-
-
-
-
-
-
-
-
-
+        jmp(mem_addr) 
 
 def InvalidCases(line,PC):
     list_reg = isa.registers.keys()
