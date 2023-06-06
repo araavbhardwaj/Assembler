@@ -118,33 +118,29 @@ def cmp(reg1, reg2):  # CHECKKKKKK THIS ONE PLS
     reg2_val = getRegValue(reg2)
 
     if reg1_val < reg2_val:
-        FLAGS['C'] = 1
+        setRegValue("FLAGS",1) 
     elif reg1_val > reg2_val:
-        FLAGS['C'] = -1
+        setRegValue("FLAGS",-1) 
     else:
-        FLAGS['C'] = 0
+        setRegValue("FLAGS",0) 
 
-    FLAGS['Z'] = 1 if reg1_val == reg2_val else 0
-
-def jmp(mem_addr):
+def jmp(pc,mem_addr):
     pc = mem_addr  
 
 
-def jlt(mem_addr):
-    setRegValue("FLAGS",1) = 0b10  # Set the second bit to 1 (assuming FLAGS['C'] is a binary number)
-    if FLAGS['C'] & 0b1: 
-        jmp(mem_addr)
+def jlt(pc ,mem_addr):
+    if getRegValue("FLAGS") == -1 : 
+        jmp(pc, mem_addr)
 
 
-def jgt(mem_addr):
-    if FLAGS['C'] == -1:  # Assuming FLAGS['C'] represents the greater than flag
-        jmp(mem_addr) 
+def jgt(pc, mem_addr):
+    if getRegValue("FLAGS") == 1 : 
+        jmp(pc, mem_addr)
 
-
-def je(mem_addr):
-    if FLAGS['Z'] == 1:  # Assuming FLAGS['Z'] represents the equal flag
-        jmp(mem_addr) 
-
+def je(pc ,mem_addr):
+   if getRegValue("FLAGS") == 0 : 
+        jmp(pc, mem_addr)
+        
 def InvalidCases(line,PC):
     list_reg = isa.registers.keys()
     list_ins = isa.instructions.keys()
