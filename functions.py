@@ -19,16 +19,16 @@ def mov_imm(isa,reg,reg_val):
     isa.setRegValue(reg,reg_val)
     RegisterError(reg)
 
-def add_reg(isa ,reg1, reg2, reg3, flags):
+def add_reg(isa ,reg1, reg2, reg3):
     reg3_val = isa.getRegValue(reg3)
     reg2_val = isa.getRegValue(reg2)
     reg1_val = reg2_val + reg3_val
 
     if reg1_val > 65535:
         isa.setRegValue("FLAGS",1) 
-        mov_imm(reg1, 0)
+        mov_imm(isa,reg1, 0)
     else:
-        mov_imm(reg1,reg1_val)
+        mov_imm(isa,reg1,reg1_val)
 
 def sub_reg(isa,reg1, reg2, reg3):
     reg2_val = isa.getRegValue(reg2)
@@ -37,30 +37,25 @@ def sub_reg(isa,reg1, reg2, reg3):
     
     if reg1_val < 0:
         isa.setRegValue("FLAGS",1) 
-        mov_imm(reg1, 0)
+        mov_imm(isa,reg1, 0)
     else:
-         mov_imm(reg1,reg1_val)
-
-def mov_imm(reg1, imm):
-    reg1_val = imm & 0x7F  #  0x7F to ensure a 7-bit value
-    mov_imm(reg1, reg1_val)
-
-def ld(mem,reg1, mem_addr):
+         mov_imm(isa,reg1,reg1_val)
+def ld(isa,mem,reg1, mem_addr):
     reg1_val = mem[mem_addr]  
-    mov_imm(reg1, reg1_val)
+    mov_imm(isa,reg1, reg1_val)
 
 def st(isa,mem,reg1, mem_addr):
     mem[mem_addr] = isa.getRegValue(reg1)  #mem is a array (pls check)
 
 def mov_reg(isa,reg1, reg2):
     reg2_val = isa.getRegValue(reg2) 
-    mov_imm(reg1, reg2_val)
+    mov_imm(isa,reg1, reg2_val)
 
 def mul_reg(isa,reg1, reg2, reg3):
     reg2_val = isa.getRegValue(reg2)  
     reg3_val = isa.getRegValue(reg3)  
     reg1_val = reg2_val * reg3_val
-    mov_imm(reg1, reg1_val)  
+    mov_imm(isa,reg1, reg1_val)  
     if reg1_val > 65535:
         isa.setRegValue("FLAGS",1) 
 
@@ -74,8 +69,8 @@ def div_reg(isa,reg3, reg4):
         quit()
     remainder = reg3_val % reg4_val
     
-    mov_imm("R0", quotient) 
-    mov_imm("R1", remainder) 
+    mov_imm(isa,"R0", quotient) 
+    mov_imm(isa,"R1", remainder) 
     if isa.reg1_val > 65535:
         isa.setRegValue("FLAGS",1) 
 
@@ -84,36 +79,36 @@ def rs(isa, reg1, imm):
     reg1_val = isa.getRegValue(reg1)
     shift_amount = imm & 0x7F  #  0x7F to ensure a 7-bit value
     reg1_val >>= shift_amount
-    mov_imm(reg1, reg1_val)
+    mov_imm(isa,reg1, reg1_val)
 
 def ls(isa,reg1, imm):
     reg1_val = isa.getRegValue(reg1)
     shift_amount = imm & 0x7F #  0x7F to ensure a 7-bit value
     reg1_val <<= shift_amount
-    mov_imm(reg1, reg1_val)
+    mov_imm(isa,reg1, reg1_val)
 
 def xor_reg(isa,reg1, reg2, reg3):
     reg2_val = isa.getRegValue(reg2)
     reg3_val = isa.getRegValue(reg3)
     reg1_val = reg2_val ^ reg3_val
-    mov_imm(reg1, reg1_val)
+    mov_imm(isa,reg1, reg1_val)
 
 def or_reg(isa, reg1, reg2, reg3):
     reg2_val = isa.getRegValue(reg2)
     reg3_val = isa.getRegValue(reg3)
     reg1_val = reg2_val | reg3_val
-    mov_imm(reg1, reg1_val)
+    mov_imm(isa,reg1, reg1_val)
 
 def and_reg(isa,reg1, reg2, reg3):
     reg2_val = isa.getRegValue(reg2)
     reg3_val = isa.getRegValue(reg3)
     reg1_val = reg2_val & reg3_val
-    mov_imm(reg1, reg1_val)
+    mov_imm(isa,reg1, reg1_val)
 
 def not_reg(isa,reg1, reg2):
     reg2_val = isa.getRegValue(reg2)
     reg1_val = ~reg2_val
-    mov_imm(reg1, reg1_val)
+    mov_imm(isa,reg1, reg1_val)
 
 
 
