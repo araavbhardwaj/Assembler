@@ -14,27 +14,32 @@ def RegisterError(reg):
     else:
         return
 
-def mov_imm(reg,reg_val):
-    setRegValue(reg,reg_val)    
-    setRegValue(reg,reg_val)
+def mov_imm(isa,reg,reg_val):
+    isa.setRegValue(reg,reg_val)    
+    isa.setRegValue(reg,reg_val)
     RegisterError(reg)
 
-def add_reg(reg1, reg2, reg3, flags):
-    reg3_val = getRegValue(reg3)
-    reg2_val = getRegValue(reg2)
+def add_reg(isa ,reg1, reg2, reg3, flags):
+    reg3_val = isa.getRegValue(reg3)
+    reg2_val = isa.getRegValue(reg2)
     reg1_val = reg2_val + reg3_val
-    mov_imm(reg1, reg1_val)
 
     if reg1_val > 65535:
-        setRegValue("FLAGS",1) 
+        isa.setRegValue("FLAGS",1) 
+        mov_imm(reg1, 0)
+    else:
+        mov_imm(reg1,reg1_val)
 
-def sub_reg(reg1, reg2, reg3):
-    reg2_val = getRegValue(reg2)
-    reg3_val = getRegValue(reg3)
+def sub_reg(isa,reg1, reg2, reg3):
+    reg2_val = isa.getRegValue(reg2)
+    reg3_val = isa.getRegValue(reg3)
     reg1_val = reg2_val - reg3_val
-    mov_imm(reg1,reg1_val)
-    if reg1_val > 65535:
-        setRegValue("FLAGS",1) 
+    
+    if reg1_val < 0:
+        isa.setRegValue("FLAGS",1) 
+        mov_imm(reg1, 0)
+    else:
+         mov_imm(reg1,reg1_val)
 
 def mov_imm(reg1, imm):
     reg1_val = imm & 0x7F  #  0x7F to ensure a 7-bit value
@@ -44,24 +49,24 @@ def ld(mem,reg1, mem_addr):
     reg1_val = mem[mem_addr]  
     mov_imm(reg1, reg1_val)
 
-def st(mem,reg1, mem_addr):
-    mem[mem_addr] = getRegValue(reg1)  #mem is a array (pls check)
+def st(isa,mem,reg1, mem_addr):
+    mem[mem_addr] = isa.getRegValue(reg1)  #mem is a array (pls check)
 
-def mov_reg(reg1, reg2):
-    reg2_val = getRegValue(reg2) 
+def mov_reg(isa,reg1, reg2):
+    reg2_val = isa.getRegValue(reg2) 
     mov_imm(reg1, reg2_val)
 
-def mul_reg(reg1, reg2, reg3):
-    reg2_val = getRegValue(reg2)  
-    reg3_val = getRegValue(reg3)  
+def mul_reg(isa,reg1, reg2, reg3):
+    reg2_val = isa.getRegValue(reg2)  
+    reg3_val = isa.getRegValue(reg3)  
     reg1_val = reg2_val * reg3_val
     mov_imm(reg1, reg1_val)  
     if reg1_val > 65535:
-        setRegValue("FLAGS",1) 
+        isa.setRegValue("FLAGS",1) 
 
-def div_reg(reg3, reg4):
-    reg3_val = getRegValue(reg3)  
-    reg4_val = getRegValue(reg4) 
+def div_reg(isa,reg3, reg4):
+    reg3_val = isa.getRegValue(reg3)  
+    reg4_val = isa.getRegValue(reg4) 
     try:
         quotient = reg3_val // reg4_val
     except:
@@ -71,74 +76,74 @@ def div_reg(reg3, reg4):
     
     mov_imm("R0", quotient) 
     mov_imm("R1", remainder) 
-    if reg1_val > 65535:
-        setRegValue("FLAGS",1) 
+    if isa.reg1_val > 65535:
+        isa.setRegValue("FLAGS",1) 
 
 
-def rs(reg1, imm):
-    reg1_val = getRegValue(reg1)
+def rs(isa, reg1, imm):
+    reg1_val = isa.getRegValue(reg1)
     shift_amount = imm & 0x7F  #  0x7F to ensure a 7-bit value
     reg1_val >>= shift_amount
     mov_imm(reg1, reg1_val)
 
-def ls(reg1, imm):
-    reg1_val = getRegValue(reg1)
+def ls(isa,reg1, imm):
+    reg1_val = isa.getRegValue(reg1)
     shift_amount = imm & 0x7F #  0x7F to ensure a 7-bit value
     reg1_val <<= shift_amount
     mov_imm(reg1, reg1_val)
 
-def xor_reg(reg1, reg2, reg3):
-    reg2_val = getRegValue(reg2)
-    reg3_val = getRegValue(reg3)
+def xor_reg(isa,reg1, reg2, reg3):
+    reg2_val = isa.getRegValue(reg2)
+    reg3_val = isa.getRegValue(reg3)
     reg1_val = reg2_val ^ reg3_val
     mov_imm(reg1, reg1_val)
 
-def or_reg(reg1, reg2, reg3):
-    reg2_val = getRegValue(reg2)
-    reg3_val = getRegValue(reg3)
+def or_reg(isa, reg1, reg2, reg3):
+    reg2_val = isa.getRegValue(reg2)
+    reg3_val = isa.getRegValue(reg3)
     reg1_val = reg2_val | reg3_val
     mov_imm(reg1, reg1_val)
 
-def and_reg(reg1, reg2, reg3):
-    reg2_val = getRegValue(reg2)
-    reg3_val = getRegValue(reg3)
+def and_reg(isa,reg1, reg2, reg3):
+    reg2_val = isa.getRegValue(reg2)
+    reg3_val = isa.getRegValue(reg3)
     reg1_val = reg2_val & reg3_val
     mov_imm(reg1, reg1_val)
 
-def not_reg(reg1, reg2):
-    reg2_val = getRegValue(reg2)
+def not_reg(isa,reg1, reg2):
+    reg2_val = isa.getRegValue(reg2)
     reg1_val = ~reg2_val
     mov_imm(reg1, reg1_val)
 
 
 
 
-def cmp(reg1, reg2):  # CHECKKKKKK THIS ONE PLS
-    reg1_val = getRegValue(reg1)
-    reg2_val = getRegValue(reg2)
+def cmp(isa,reg1, reg2):  # CHECKKKKKK THIS ONE PLS
+    reg1_val = isa.getRegValue(reg1)
+    reg2_val = isa.getRegValue(reg2)
 
     if reg1_val < reg2_val:
-        setRegValue("FLAGS",1) 
+        isa.setRegValue("FLAGS",1) 
     elif reg1_val > reg2_val:
-        setRegValue("FLAGS",-1) 
+        isa.setRegValue("FLAGS",-1) 
     else:
-        setRegValue("FLAGS",0) 
+        isa.setRegValue("FLAGS",0) 
 
 def jmp(pc,mem_addr):
     pc = mem_addr  
 
 
-def jlt(pc ,mem_addr):
-    if getRegValue("FLAGS") == -1 : 
+def jlt(isa,pc ,mem_addr):
+    if isa.getRegValue("FLAGS") == -1 : 
         jmp(pc, mem_addr)
 
 
-def jgt(pc, mem_addr):
-    if getRegValue("FLAGS") == 1 : 
+def jgt(isa,pc, mem_addr):
+    if isa.getRegValue("FLAGS") == 1 : 
         jmp(pc, mem_addr)
 
-def je(pc ,mem_addr):
-   if getRegValue("FLAGS") == 0 : 
+def je(isa,pc ,mem_addr):
+   if isa.getRegValue("FLAGS") == 0 : 
         jmp(pc, mem_addr)
         
 def InvalidCases(line,PC):
