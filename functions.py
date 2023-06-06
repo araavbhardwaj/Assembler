@@ -130,8 +130,9 @@ def jmp(mem_addr):
 
 
 def jlt(mem_addr):
-    if FLAGS['C'] == 1:  # Assuming FLAGS['C'] represents the less than flag
-        jmp(mem_addr)  
+    setRegValue("FLAGS",1) = 0b10  # Set the second bit to 1 (assuming FLAGS['C'] is a binary number)
+    if FLAGS['C'] & 0b1: 
+        jmp(mem_addr)
 
 
 def jgt(mem_addr):
