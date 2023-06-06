@@ -17,7 +17,8 @@ def get(item):
 #__________________PC related functions___________________________________
 
 def dump_pc(pc):
-        print("{0:07b}".format(pc),end="        ")
+        #print("{0:07b}".format(pc),end="        ")
+        return "{0:07b}".format(pc)+"        "
 #______________________REGISTER related functions_________________________
 def read( register,registers):
         return registers[register]
@@ -25,22 +26,24 @@ def read( register,registers):
 def write( register, value):
         registers[register] = value
 def dump_reg(isa):
+        line=""
         for reg in isa.registers:
             reg_val = int(isa.getRegValue(reg))
             reg_bin = '{0:016b}'.format(reg_val)
-            print(reg_bin,end=" ")
-        print()
+            line+=reg_bin+" "
+        return line
 #________________________Mem related functions__________________________
 
 def read_mem(address,mem):
         return mem[address]
 def write_mem(address, data,mem):
         mem[address] = data
-def dump_mem(mem):
+def dump_mem(mem,main_list):
     for data in mem[:pc]:
-        print(data)
+        main_list.append(data)
     for data in mem[pc+1:]:
-        print('{0:016b}'.format(int(data)))#printing the mem dump as 16 bit binary rep
+        main_list.append('{0:016b}'.format(int(data)))
+    return main_list
 #__________________________EXECUTION ENGINE_______________________________
 def execute( instruction,pc, registers,isa,halted):
         opcode = instruction[:5]#opcode val
@@ -212,10 +215,9 @@ def execute( instruction,pc, registers,isa,halted):
         return halted,pc
 #main loop starts here
 #program is the nested list after run this
-program = ["0000000000001010",
-"0000000001101010",
-"0000000010011100",
-"1101000000000000"]
+program = []
+for kx in sys.stdin:
+    program.append(kx)
 mem = [0]*256 # main memory mem_addr is the mem index
 pc = 0 #program counter
 isa = main.ISA()
@@ -223,11 +225,14 @@ isa = main.ISA()
 for address, instruction in enumerate(program):
     write_mem(address, instruction,mem)
 halted =False
+main_list =[]
+line =""
 while not halted:
     instruction = read_mem(get(pc),mem)
-    
     halted,pc = execute(instruction,pc,isa.registers,isa,halted)
-    dump_pc(pc)
-    dump_reg(isa)
-dump_mem(mem)
+    main_list.append(dump_pc(pc)+dump_reg(isa))
+main_list = dump_mem(mem,main_list)
+
+for kx in main_list:
+    sys.stdout.write(kx)
 
