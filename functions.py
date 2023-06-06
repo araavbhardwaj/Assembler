@@ -16,19 +16,25 @@ def RegisterError(reg):
 
 def mov_imm(reg,reg_val):
     setRegValue(reg,reg_val)    
+    setRegValue(reg,reg_val)
     RegisterError(reg)
 
-def add_reg(reg1,reg2,reg3):
+def add_reg(reg1, reg2, reg3, flags):
     reg3_val = getRegValue(reg3)
     reg2_val = getRegValue(reg2)
     reg1_val = reg2_val + reg3_val
-    mov_imm(reg1,reg1_val)
+    mov_imm(reg1, reg1_val)
+
+    if reg1_val > 65535:
+        setRegValue("FLAGS",1) 
 
 def sub_reg(reg1, reg2, reg3):
     reg2_val = getRegValue(reg2)
     reg3_val = getRegValue(reg3)
     reg1_val = reg2_val - reg3_val
     mov_imm(reg1,reg1_val)
+    if reg1_val > 65535:
+        setRegValue("FLAGS",1) 
 
 def mov_imm(reg1, imm):
     reg1_val = imm & 0x7F  #  0x7F to ensure a 7-bit value
@@ -50,6 +56,8 @@ def mul_reg(reg1, reg2, reg3):
     reg3_val = getRegValue(reg3)  
     reg1_val = reg2_val * reg3_val
     mov_imm(reg1, reg1_val)  
+    if reg1_val > 65535:
+        setRegValue("FLAGS",1) 
 
 def div_reg(reg3, reg4):
     reg3_val = getRegValue(reg3)  
@@ -63,6 +71,9 @@ def div_reg(reg3, reg4):
     
     mov_imm("R0", quotient) 
     mov_imm("R1", remainder) 
+    if reg1_val > 65535:
+        setRegValue("FLAGS",1) 
+
 
 def rs(reg1, imm):
     reg1_val = getRegValue(reg1)
