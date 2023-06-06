@@ -49,9 +49,11 @@ def read( register,registers):
 
 def write( register, value):
         registers[register] = value
-def dump_reg():
-        for value in self.registers:
-            print(f"value:016b",end=" ")
+def dump_reg(isa):
+        for reg in isa.registers:
+            reg_val = isa.getRegValue(reg)
+            reg_bin = '{0:016b}'.format(num)
+            print(reg_bin)
         print()
 #________________________Mem related functions__________________________
 
@@ -142,18 +144,18 @@ def execute( instruction,pc, registers,isa):
             isa.jump_lt(pc, mem.index(label_address))
         elif opcode == "11101":  # jgt
             label_address = operand [9:16]
-            isa.jump_gt(self.register_file, self.program_counter, label_address)
+            isa.jump_gt(pc, mem.index(label_address))
         elif opcode == "11111":  # je
             label_address = operand [9:16]
-            isa.jump_eq(self.register_file, self.program_counter, label_address)
+            isa.jump_eq(pc, mem.index(label_address))
         elif opcode == "11010":  # hlt
-            self.halted = True
+            halted = True
         else:
             print("Invalid opcode")
 
         # Update the program counter
-        new_pc = self.program_counter.get() + 1
-        self.program_counter.update(new_pc)
+        new_pc = pc + 1
+        update_pc(new_pc)
 
         return self.halted,new_pc
 #main loop starts here
@@ -162,7 +164,7 @@ program = ["0000000000001010",
 "0000000001101010",
 "0000000010011100",
 "1101000000000000"]
-mem = [0]*256 # main memory
+mem = [0]*256 # main memory mem_addr is the mem index
 pc = 0 #program counter
 isa = main.ISA()
 #registers = {"R0": 0,"R1": 0,"R2": 0,"R3": 0,"R4": 0,"R5": 0,"R6": 0,"FLAGS": 0}# register memory
@@ -173,7 +175,7 @@ while not halted:
     instruction = read_mem(get(pc))
     halted,pc = execute(instruction,pc,isa.registers,isa)
     dump_pc(pc)
-    register_file.dump()
+    dump_reg()
     program_counter.update(new_pc,pc)
 memory.dump(mem)
-print("g")
+
