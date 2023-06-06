@@ -87,7 +87,7 @@ for z in inp:
         if p[2]=="FLAGS":
             val=isa.getRegCode(p[2])
         elif p[0]=="movf":
-            val=decimal_to_ieee(int(p[2]))
+            val=functions.decimal_to_ieee(int(p[2]))
         else:
             val=bin(int(p[2][1:]))[2:]
             if len(str(val))>7:
