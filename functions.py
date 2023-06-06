@@ -15,7 +15,7 @@ def RegisterError(reg):
         return
 
 def mov_imm(reg,reg_val):
-    reg[1] = reg_val
+    setRegValue(reg,reg_val)    
     RegisterError(reg)
 
 def add_reg(reg1,reg2,reg3):
@@ -34,11 +34,11 @@ def mov_imm(reg1, imm):
     reg1_val = imm & 0x7F  #  0x7F to ensure a 7-bit value
     mov_imm(reg1, reg1_val)
 
-def ld(reg1, mem_addr):
+def ld(mem,reg1, mem_addr):
     reg1_val = mem[mem_addr]  
     mov_imm(reg1, reg1_val)
 
-def st(reg1, mem_addr):
+def st(mem,reg1, mem_addr):
     mem[mem_addr] = getRegValue(reg1)  #mem is a array (pls check)
 
 def mov_reg(reg1, reg2):
@@ -352,3 +352,30 @@ def check_variables(variables,line,line_ct):
         print("Variable not declared at line",line_ct)
         quit()
 
+def decimal_to_ieee(decimal):
+    shifts = 0
+    if decimal != 0:
+        while abs(decimal) < 1:
+            decimal *= 2
+            shifts -= 1
+        while abs(decimal) >= 2:
+            decimal /= 2
+            shifts += 1
+
+    # Calculate the exponent value
+    exponent = shifts + 3  # bias is 3
+    # Calculate the mantissa by converting the fractional part to binary
+    fractional_part = abs(decimal) - int(abs(decimal))
+    mantissa = ""
+    for _ in range(5):
+        fractional_part *= 2
+        bit = int(fractional_part)
+        mantissa += str(bit)
+        fractional_part -= bit
+
+    # Convert the exponent to a 3-bit binary representation
+    exponent_binary = bin(exponent)[2:].zfill(3)
+
+    # Combine the exponent and mantissa to form the 8-bit IEEE representation
+    ieee = exponent_binary + mantissa
+    return ieee
