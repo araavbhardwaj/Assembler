@@ -15,8 +15,7 @@ def RegisterError(reg):
         return
 
 def mov_imm(isa,reg,reg_val):
-    isa.setRegValue(reg,reg_val)    
-    isa.setRegValue(reg,reg_val)
+    isa.setRegValue(reg,int(reg_val))    
     RegisterError(reg)
 
 def add_reg(isa ,reg1, reg2, reg3):
@@ -25,7 +24,7 @@ def add_reg(isa ,reg1, reg2, reg3):
     reg1_val = reg2_val + reg3_val
 
     if reg1_val > 65535:
-        isa.setRegValue("FLAGS",1) 
+        isa.setRegValue("FLAGS","0"*12+"1000") 
         mov_imm(isa,reg1, 0)
     else:
         mov_imm(isa,reg1,reg1_val)
@@ -37,7 +36,7 @@ def sub_reg(isa,reg1, reg2, reg3):
     
     if reg1_val < 0:
         isa.setRegValue("FLAGS",1) 
-        mov_imm(isa,reg1, 0)
+        mov_imm(isa,reg1, 65534)
     else:
          mov_imm(isa,reg1,reg1_val)
 def ld(isa,mem,reg1, mem_addr):
@@ -110,36 +109,36 @@ def not_reg(isa,reg1, reg2):
     reg1_val = ~reg2_val
     mov_imm(isa,reg1, reg1_val)
 
-
+def reset_flag(isa):
+    isa.setRegValue("FLAGS","0"*16)
 
 
 def cmp(isa,reg1, reg2):  # CHECKKKKKK THIS ONE PLS
     reg1_val = isa.getRegValue(reg1)
     reg2_val = isa.getRegValue(reg2)
-
     if reg1_val < reg2_val:
-        isa.setRegValue("FLAGS",1) 
+        isa.setRegValue("FLAGS","0"*12+"0100") 
     elif reg1_val > reg2_val:
-        isa.setRegValue("FLAGS",-1) 
+        isa.setRegValue("FLAGS","0"*12+"0010") 
     else:
-        isa.setRegValue("FLAGS",0) 
+        isa.setRegValue("FLAGS","0"*12+"0001") 
 
-def jmp(pc,mem_addr):
+def jmp(isa,pc,mem_addr):
     pc = mem_addr  
 
 
 def jlt(isa,pc ,mem_addr):
-    if isa.getRegValue("FLAGS") == -1 : 
-        jmp(pc, mem_addr)
+    if isa.getRegValue("FLAGS") == "0000000000000100" : 
+        jmp(isa,pc, mem_addr)
 
 
 def jgt(isa,pc, mem_addr):
-    if isa.getRegValue("FLAGS") == 1 : 
-        jmp(pc, mem_addr)
+    if isa.getRegValue("FLAGS") == "0000000000000010" : 
+        jmp(isa,pc, mem_addr)
 
 def je(isa,pc ,mem_addr):
-   if isa.getRegValue("FLAGS") == 0 : 
-        jmp(pc, mem_addr)
+   if isa.getRegValue("FLAGS") == "0000000000000001" : 
+        jmp(isa,pc, mem_addr)
         
 def InvalidCases(line,PC):
     list_reg = isa.registers.keys()

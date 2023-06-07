@@ -42,7 +42,7 @@ class ISA:
             "R4": ["100", 0],
             "R5": ["101", 0],
             "R6": ["110", 0],
-            "FLAGS": ["111", 0],
+            "FLAGS": ["111", "0"*16],
         }
     def getRegCode(self, reg):
         return self.registers[reg][0]
@@ -55,7 +55,7 @@ class ISA:
 
     def setRegValue(self, reg, value):
         OPCode = self.getRegCode(reg)
-        self.registers[reg] = [OPCode, str(value)]
+        self.registers[reg] = [OPCode, value]
 
     def getInstructionCode(self, instruction):
         return self.instructions[instruction][0]
